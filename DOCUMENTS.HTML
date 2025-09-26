@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Documents Required</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 30px;
+  line-height: 1.6;
+  background-color: #fafafa;
+  color: #333;
+}
+h1 {
+  text-align: center;
+  color: #222;
+  font-size: 1.8em;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+#datetime {
+  text-align: center;
+  font-size: 0.95em;
+  color: #777;
+  margin-bottom: 25px;
+}
+.loan-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 25px;
+}
+.loan-section {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fff;
+  flex: 1 1 320px;
+  max-width: 360px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+.loan-section:hover {
+  transform: translateY(-3px);
+}
+.loan-header {
+  background-color: #f7f7f7;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+  font-size: 1.05em;
+  color: #444;
+  border-bottom: 1px solid #eee;
+}
+.loan-header:hover {
+  background-color: #efefef;
+}
+.loan-content {
+  padding: 18px 20px;
+  display: none;
+}
+.loan-content.active {
+  display: block;
+}
+ul.doc-list {
+  columns: 2;
+  -webkit-columns: 2;
+  -moz-columns: 2;
+  column-gap: 40px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ul.doc-list li {
+  margin-bottom: 8px;
+  text-transform: lowercase;
+  break-inside: avoid; /* prevent splitting across columns */
+}
+.arrow {
+  transition: transform 0.3s ease-in-out;
+  font-size: 1.2em;
+  color: #666;
+}
+.arrow.active {
+  transform: rotate(90deg);
+}
+.export-buttons {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.export-buttons button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  flex: 1;
+  transition: background-color 0.2s;
+}
+.export-buttons button:hover {
+  background-color: #0056b3;
+}
+.vehicle-input {
+  margin: 10px 0 20px 0;
+}
+.vehicle-input label {
+  font-size: 0.9em;
+  display: block;
+  margin-bottom: 5px;
+  color: #444;
+}
+.vehicle-input input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95em;
+}
+</style>
+</head>
+<body>
+
+<h1>Required Documents for Loans</h1>
+<div id="datetime"></div>
+
+<div class="loan-container">
+
+  <!-- Personal Loan -->
+  <div class="loan-section">
+    <div class="loan-header" onclick="toggleDropdown('personal')">
+      <span>personal loan documents (ಸಾಲಗಾರರು & ಜಮೀನುದಾರರು)</span>
+      <span class="arrow" id="arrow-personal">&#9658;</span>
+    </div>
+    <div class="loan-content" id="content-personal">
+      <ul class="doc-list">
+        <li>adhar front & back - 2 xerox</li>
+        <li>pan - 2 xerox copy</li>
+        <li>cheque - 3</li>
+        <li>passbook - 2 xerox copy</li>
+        <li>photo - 3</li>
+        <li>election voter id</li>
+        <li>e-mail id</li>
+        <li>mobile number (adhar & bank registered)</li>
+        <li>cibil report</li>
+        <li>bank statement</li>
+        <li>others if required</li>
+      </ul>
+      <div class="export-buttons">
+        <button onclick="exportAsPdf('personal')">Export PDF</button>
+        <button onclick="exportAsImage('personal')">Export Image</button>
+        <button onclick="shareFile('personal','pdf')">Share PDF</button>
+        <button onclick="shareFile('personal','image')">Share Image</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vehicle Loan -->
+  <div class="loan-section">
+    <div class="loan-header" onclick="toggleDropdown('vehicle')">
+      <span>vehicle loan documents (ಸಾಲಗಾರರು & ಜಮೀನುದಾರರು)</span>
+      <span class="arrow" id="arrow-vehicle">&#9658;</span>
+    </div>
+    <div class="loan-content" id="content-vehicle">
+      <div class="vehicle-input">
+        <label for="vehicleNo">enter vehicle number:</label>
+        <input type="text" id="vehicleNo" placeholder="e.g. KA-25-AB-1234">
+      </div>
+      <ul class="doc-list">
+        <li>adhar front & back - 2 xerox</li>
+        <li>pan - 2 xerox copy</li>
+        <li>cheque - 3</li>
+        <li>passbook - 2 xerox copy</li>
+        <li>photo - 3</li>
+        <li>election voter id</li>
+        <li>e-mail id</li>
+        <li>mobile number (adhar & bank registered)</li>
+        <li>cibil report</li>
+        <li>bank statement</li>
+        <li>quotation & down payment receipt / rc particular with finance hp</li>
+        <li>insurance copy with finance hp</li>
+        <li>others if required</li>
+      </ul>
+      <div class="export-buttons">
+        <button onclick="exportAsPdf('vehicle')">Export PDF</button>
+        <button onclick="exportAsImage('vehicle')">Export Image</button>
+        <button onclick="shareFile('vehicle','pdf')">Share PDF</button>
+        <button onclick="shareFile('vehicle','image')">Share Image</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mortgage Loan -->
+  <div class="loan-section">
+    <div class="loan-header" onclick="toggleDropdown('mortgage')">
+      <span>mortgage loan documents (ಸಾಲಗಾರರು & ಜಮೀನುದಾರರು)</span>
+      <span class="arrow" id="arrow-mortgage">&#9658;</span>
+    </div>
+    <div class="loan-content" id="content-mortgage">
+      <ul class="doc-list">
+        <li>adhar front & back - 2 xerox</li>
+        <li>pan - 2 xerox copy</li>
+        <li>cheque - 3</li>
+        <li>passbook - 2 xerox copy</li>
+        <li>photo - 3</li>
+        <li>election voter id</li>
+        <li>e-mail id</li>
+        <li>mobile number (adhar & bank registered)</li>
+        <li>cibil report</li>
+        <li>bank statement</li>
+        <li>title deed & ec</li>
+        <li>sale deed, rtc</li>
+        <li>tax paid receipt</li>
+        <li>layout map, na order copy</li>
+        <li>others if required</li>
+      </ul>
+      <div class="export-buttons">
+        <button onclick="exportAsPdf('mortgage')">Export PDF</button>
+        <button onclick="exportAsImage('mortgage')">Export Image</button>
+        <button onclick="shareFile('mortgage','pdf')">Share PDF</button>
+        <button onclick="shareFile('mortgage','image')">Share Image</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const { jsPDF } = window.jspdf;
+
+function updateDateTime() {
+  const now = new Date();
+  const formatted = now.toLocaleString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+  document.getElementById("datetime").textContent = "Date & Time: " + formatted;
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+function toggleDropdown(type) {
+  const allContent = document.querySelectorAll(".loan-content");
+  const allArrows = document.querySelectorAll(".arrow");
+  const content = document.getElementById("content-" + type);
+  const arrow = document.getElementById("arrow-" + type);
+  const isActive = content.classList.contains("active");
+  allContent.forEach(c => c.classList.remove("active"));
+  allArrows.forEach(a => a.classList.remove("active"));
+  if (!isActive) {
+    content.classList.add("active");
+    arrow.classList.add("active");
+  }
+}
+
+function getExportElement(loanType) {
+  const container = document.createElement("div");
+  const loanName = document.querySelector(`#content-${loanType}`).previousElementSibling.querySelector("span").textContent.trim();
+  const datetime = document.getElementById("datetime").textContent;
+  let extra = "";
+  if (loanType === "vehicle") {
+    const vehicleNo = document.getElementById("vehicleNo").value.trim();
+    if (vehicleNo) extra = `<p style="font-size:14px;margin-bottom:10px;"><b>vehicle number:</b> ${vehicleNo}</p>`;
+  }
+  const listContent = document.querySelector(`#content-${loanType} ul`).outerHTML;
+  container.innerHTML = `<h2 style="font-family:Roboto;font-size:18px;margin-bottom:10px;">${loanName}</h2>
+  <p style="font-size:12px;color:#555;">${datetime}</p>${extra}${listContent}`;
+  container.style.padding = "10px";
+  container.style.fontFamily = "Roboto, sans-serif";
+  container.style.background = "#fff";
+  return container;
+}
+
+function exportAsPdf(loanType) {
+  const element = getExportElement(loanType);
+  document.body.appendChild(element);
+  html2canvas(element, { scale: 1 }).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${loanType}_loan.pdf`);
+    document.body.removeChild(element);
+  });
+}
+
+function exportAsImage(loanType) {
+  const element = getExportElement(loanType);
+  document.body.appendChild(element);
+  html2canvas(element, { scale: 1 }).then(canvas => {
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = `${loanType}_loan.png`;
+    link.click();
+    document.body.removeChild(element);
+  });
+}
+
+async function shareFile(loanType, format) {
+  const element = getExportElement(loanType);
+  document.body.appendChild(element);
+
+  if (format === "pdf") {
+    html2canvas(element, { scale: 1 }).then(canvas => {
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const blob = pdf.output("blob");
+      const file = new File([blob], `${loanType}_loan.pdf`, { type: "application/pdf" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ title: "Loan Documents", files: [file] }).catch(() => pdf.save(`${loanType}_loan.pdf`));
+      } else {
+        pdf.save(`${loanType}_loan.pdf`);
+      }
+      document.body.removeChild(element);
+    });
+  } else {
+    html2canvas(element, { scale: 1 }).then(canvas => {
+      canvas.toBlob(blob => {
+        const file = new File([blob], `${loanType}_loan.png`, { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ title: "Loan Documents", files: [file] }).catch(() => {
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `${loanType}_loan.png`;
+            link.click();
+          });
+        } else {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = `${loanType}_loan.png`;
+          link.click();
+        }
+        document.body.removeChild(element);
+      });
+    });
+  }
+}
+</script>
+</body>
+</html>
